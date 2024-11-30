@@ -22,4 +22,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/
+    - ./assets/
+  fonts:
+    - family: Yuruka
+      fonts:
+        - asset: ./assets/fonts/yuruka.ttf
