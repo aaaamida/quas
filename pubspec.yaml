@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  adaptive_theme: ^3.6.0
 
 dev_dependencies:
   flutter_test:
@@ -23,7 +24,13 @@ flutter:
   uses-material-design: true
   assets:
     - ./assets/
+    - ./assets/icons/
   fonts:
     - family: Yuruka
       fonts:
         - asset: ./assets/fonts/yuruka.ttf
+    - family: Helvetica
+      fonts:
+        - asset: ./assets/fonts/Helvetica.ttf
+        - asset: ./assets/fonts/Helvetica-Bold.ttf
+          weight: 600

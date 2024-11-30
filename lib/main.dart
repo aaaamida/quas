@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'enums.dart';
 import 'home.dart';
@@ -14,18 +15,23 @@ class MyApp extends StatelessWidget {
 
         @override
         Widget build(BuildContext context) {
-                return MaterialApp(
-                        title: "QuAs",
-                        theme: ThemeData(
-                                // default color scheme
-                                // color0: #5F5286
-                                // color1: #453B61
-                                // color2: #8E508A
-                                colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
-                                useMaterial3: true,
+                return AdaptiveTheme(
+                        light: ThemeData.light(useMaterial3: true),
+                        dark: ThemeData.dark(useMaterial3: true),
+                        initial: AdaptiveThemeMode.dark,
+                        builder: (theme, darkTheme) => MaterialApp(
+                                title: "QuAs",
+                                theme: ThemeData(
+                                        // default color scheme
+                                        // color0: #5F5286
+                                        // color1: #453B61
+                                        // color2: #8E508A
+                                        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
+                                        useMaterial3: true,
+                                ),
+                                home: const MyHomePage(),
+                                debugShowCheckedModeBanner: false,
                         ),
-                        home: const MyHomePage(),
-                        debugShowCheckedModeBanner: false,
                 );
         }
 }
@@ -48,6 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 initialPage: 0,
                 keepPage: true,
         );
+        final _formkey = GlobalKey<FormState>();
+
 
         @override
         void initState() {
@@ -65,8 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         BottomNavigationBarItem(
                                 icon: Icon(Icons.bookmark_add_outlined),
                                 activeIcon: Icon(Icons.bookmark_add),
-                                tooltip: "Add or remove tasks",
-                                label: "Tasks",
+                                tooltip: "Add, edit, or remove tasks",
+                                label: "Manage Tasks",
                         ),
                         BottomNavigationBarItem(
                                 icon: Icon(Icons.account_circle_outlined),
@@ -86,8 +94,78 @@ class _MyHomePageState extends State<MyHomePage> {
         void barItemTapped(int index) {
                 setState(() {
                         _selectedIndex = index;
+                        // _pageController.animateToPage(index, duration: const Duration(milliseconds: 700), curve: Curves.easeOutExpo);
                         _pageController.jumpToPage(index);
                 });
+        }
+
+        Widget formDialog() {
+                return AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        content: Stack(
+                                clipBehavior: Clip.none,
+                                children: <Widget>[
+                                        Form(
+                                                key: _formkey,
+                                                child: Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: formItems(),
+                                                ),
+                                        )
+                                ],
+                        ),
+                        actions: formButtons(),
+                );
+        }
+
+        List<Widget> formItems() {
+                return [
+                        const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: TextField(
+                                        decoration: InputDecoration(
+                                                hintText: "Title",
+                                                border: OutlineInputBorder(),
+                                        ),
+                                        enabled: false,
+                                )
+                        ),
+                        const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: TextField(
+                                        decoration: InputDecoration(
+                                                hintText: "Category",
+                                                border: OutlineInputBorder(),
+                                        ),
+                                        enabled: false,
+                                )
+                        ),
+                        const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: TextField(
+                                        decoration: InputDecoration(
+                                                hintText: "Deadline",
+                                                border: OutlineInputBorder(),
+                                        ),
+                                        enabled: false,
+                                )
+                        ),
+                ];
+        }
+
+        List<Widget> formButtons() {
+                return [
+                        TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text("Cancel", style: TextStyle(fontFamily: "Helvetica"))
+                        ),
+                        const SizedBox(width: 10),
+                        // ignore: prefer_const_constructors
+                        TextButton(
+                                onPressed: null,
+                                child: const Text("Add", style: TextStyle(fontFamily: "Helvetica"))
+                        ),
+                ];
         }
 
         @override
@@ -106,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPageChanged: (int index) {
                                         pageChanged(index);
                                 },
-                                children: <Widget>[
+                                children: const <Widget>[
                                         Home(),
                                         Categories(),
                                         Profile(),
@@ -124,7 +202,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onTap: (int index) {
                                         barItemTapped(index);
                                 },
-                        )
+                        ),
+                        floatingActionButton: FloatingActionButton(
+                                onPressed: () async {
+                                        await showDialog<void>(
+                                                context: context, 
+                                                builder: (context) => formDialog(),
+                                        );
+                                },
+                                backgroundColor: switch (colorTheme) {
+                                        AppTheme.light => Color.alphaBlend(const Color(0xFFFFFFFF), Color(backgroundColor)),
+                                        AppTheme.dark  => Color.alphaBlend(const Color(0xFFACACAC), Color(backgroundColor)),
+                                },
+                                hoverColor: switch (colorTheme) {
+                                        AppTheme.light => const Color(0xFFCCCCCC),
+                                        AppTheme.dark  => const Color(0xFF919191),
+                                },
+                                child: const Icon(Icons.edit_outlined),
+                        ),
                 );
         }
 }
