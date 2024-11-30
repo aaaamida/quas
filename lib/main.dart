@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'enums.dart';
+import 'home.dart';
+import 'categories.dart';
+import 'profile.dart';
 
 void main() {
      // WidgetsFlutterBinding.ensureInitialized();
@@ -20,28 +24,71 @@ class MyApp extends StatelessWidget {
                                 colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
                                 useMaterial3: true,
                         ),
-                        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+                        home: const MyHomePage(),
                         debugShowCheckedModeBanner: false,
                 );
         }
 }
 
 class MyHomePage extends StatefulWidget {
-        const MyHomePage({super.key, required this.title});
-
-        final String title;
+        const MyHomePage({super.key});
 
         @override
         State<MyHomePage> createState() => _MyHomePageState();
 }
 
-enum AppTheme { light, dark }
-
 class _MyHomePageState extends State<MyHomePage> {
         // light: #FFFFFF
         // dark: #1E1E2F
         int backgroundColor = 0xFFFFFFFF;
+        int _selectedIndex = 0;
         AppTheme colorTheme = AppTheme.light;
+        // ignore: prefer_final_fields
+        PageController _pageController = PageController(
+                initialPage: 0,
+                keepPage: true,
+        );
+
+        @override
+        void initState() {
+                super.initState();
+        }
+
+        List<BottomNavigationBarItem> bottomBarItems() {
+                return const [
+                        BottomNavigationBarItem(
+                                icon: Icon(Icons.home_outlined),
+                                activeIcon: Icon(Icons.home),
+                                tooltip: "Move to home page",
+                                label: "Home",
+                        ),
+                        BottomNavigationBarItem(
+                                icon: Icon(Icons.bookmark_add_outlined),
+                                activeIcon: Icon(Icons.bookmark_add),
+                                tooltip: "Add or remove tasks",
+                                label: "Tasks",
+                        ),
+                        BottomNavigationBarItem(
+                                icon: Icon(Icons.account_circle_outlined),
+                                activeIcon: Icon(Icons.account_circle_rounded),
+                                tooltip: "User Profile",
+                                label: "Profile",
+                        ),
+                ];
+        }
+
+        void pageChanged(int index) {
+                setState(() {
+                        _selectedIndex = index;
+                });
+        }
+
+        void barItemTapped(int index) {
+                setState(() {
+                        _selectedIndex = index;
+                        _pageController.jumpToPage(index);
+                });
+        }
 
         @override
         Widget build(BuildContext context) {
@@ -54,93 +101,30 @@ class _MyHomePageState extends State<MyHomePage> {
                                 backgroundColor: Color(0xFF5F5286),
                         ),
                         // ignore: prefer_const_constructors
-                        body: AppBody(theme: colorTheme),
-                        bottomNavigationBar: const BottomBar(color: 0xFF453B61),
-                );
-        }
-}
-
-class AppBody extends StatefulWidget {
-        const AppBody({super.key, required this.theme});
-
-        final AppTheme theme;
-
-        @override
-        State<AppBody> createState() => _AppBodyState();
-}
-
-class _AppBodyState extends State<AppBody> {
-
-        AppTheme background = AppTheme.light;
-
-        Color backgroundTheme(AppTheme bg) {
-                switch (bg) {
-                        case AppTheme.light: 
-                                return const Color(0xFFFFFFFF);
-                        case AppTheme.dark:
-                                return const Color(0xFF1E1E2F);
-                }
-        }
-
-        @override
-        Widget build(BuildContext context) {
-                return Container(
-                        color: backgroundTheme(widget.theme),
-                        // ignore: prefer_const_constructors
-                        child: Column(
-                                // TODO: add task containers dynamically in a class definition
-                                // ignore: prefer_const_literals_to_create_immutables
-                                children: [
-
+                        body: PageView(
+                                controller: _pageController,
+                                onPageChanged: (int index) {
+                                        pageChanged(index);
+                                },
+                                children: <Widget>[
+                                        Home(),
+                                        Categories(),
+                                        Profile(),
                                 ],
                         ),
-                );
-        }
-}
-
-class BottomBar extends StatefulWidget {
-        const BottomBar({super.key, required this.color});
-
-        // WARN: could be mutable in runtime?
-        final int color;
-
-        @override
-        State<BottomBar> createState() => _BottomBarState();
-}
-
-class _BottomBarState extends State<BottomBar> {
-        int _selectedItem = 0;
-
-        void changeSelectedItem(int index) {
-                setState(() {
-                        // TODO: change page view on call
-                        _selectedItem = index;
-                });
-        }
-
-        @override
-        Widget build(BuildContext context) {
-                return BottomNavigationBar(
-                        backgroundColor: Color(widget.color),
-                        currentIndex: _selectedItem,
-                        selectedItemColor: const Color(0xFFFFFFFF),
-                        selectedLabelStyle: const TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w500),
-                        unselectedItemColor: const Color(0xFFACACAC),
-                        unselectedLabelStyle: const TextStyle(color: Color(0xFFACACAC), fontWeight: FontWeight.w400),
-                        items: const [
-                                BottomNavigationBarItem(
-                                        icon: Icon(Icons.home_outlined),
-                                        activeIcon: Icon(Icons.home),
-                                        tooltip: "Move to home page",
-                                        label: "Home",
-                                ),
-                                BottomNavigationBarItem(
-                                        icon: Icon(Icons.bookmark_add_outlined),
-                                        activeIcon: Icon(Icons.bookmark_add),
-                                        tooltip: "Move to home page",
-                                        label: "Add new",
-                                ),
-                        ],
+                        // ignore: prefer_const_constructors
+                        bottomNavigationBar: BottomNavigationBar(
+                                backgroundColor: const Color(0xFF5F5286),
+                                currentIndex: _selectedIndex,
+                                selectedItemColor: const Color(0xFFFFFFFF),
+                                selectedLabelStyle: const TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w500),
+                                unselectedItemColor: const Color(0xFFACACAC),
+                                unselectedLabelStyle: const TextStyle(color: Color(0xFFACACAC), fontWeight: FontWeight.w400),
+                                items: bottomBarItems(),
+                                onTap: (int index) {
+                                        barItemTapped(index);
+                                },
+                        )
                 );
         }
 }
