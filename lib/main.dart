@@ -55,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         // ignore: prefer_const_constructors
                         body: AppBody(theme: colorTheme),
+                        bottomNavigationBar: const BottomBar(color: 0xFF453B61),
                 );
         }
 }
@@ -98,16 +99,48 @@ class _AppBodyState extends State<AppBody> {
 }
 
 class BottomBar extends StatefulWidget {
-        const BottomBar({super.key});
+        const BottomBar({super.key, required this.color});
+
+        // WARN: could be mutable in runtime?
+        final int color;
+
         @override
         State<BottomBar> createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
+        int _selectedItem = 0;
+
+        void changeSelectedItem(int index) {
+                setState(() {
+                        // TODO: change page view on call
+                        _selectedItem = index;
+                });
+        }
+
         @override
         Widget build(BuildContext context) {
-                return BottomAppBar(
-
+                return BottomNavigationBar(
+                        backgroundColor: Color(widget.color),
+                        currentIndex: _selectedItem,
+                        selectedItemColor: const Color(0xFFFFFFFF),
+                        selectedLabelStyle: const TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w500),
+                        unselectedItemColor: const Color(0xFFACACAC),
+                        unselectedLabelStyle: const TextStyle(color: Color(0xFFACACAC), fontWeight: FontWeight.w400),
+                        items: const [
+                                BottomNavigationBarItem(
+                                        icon: Icon(Icons.home_outlined),
+                                        activeIcon: Icon(Icons.home),
+                                        tooltip: "Move to home page",
+                                        label: "Home",
+                                ),
+                                BottomNavigationBarItem(
+                                        icon: Icon(Icons.bookmark_add_outlined),
+                                        activeIcon: Icon(Icons.bookmark_add),
+                                        tooltip: "Move to home page",
+                                        label: "Add new",
+                                ),
+                        ],
                 );
         }
 }
