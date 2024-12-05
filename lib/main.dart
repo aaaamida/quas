@@ -94,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         void barItemTapped(int index) {
                 setState(() {
                         _selectedIndex = index;
+                        // FIX: probably need to fix the transition when skipping one index over
                         // _pageController.animateToPage(index, duration: const Duration(milliseconds: 700), curve: Curves.easeOutExpo);
                         _pageController.jumpToPage(index);
                 });
