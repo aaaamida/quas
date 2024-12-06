@@ -13,6 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   adaptive_theme: ^3.6.0
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

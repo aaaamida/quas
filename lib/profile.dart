@@ -18,11 +18,11 @@ class _ProfileState extends State<Profile> {
                                         children: [
                                                 pfpExists
                                                         // TODO: add circular frame for profile picture if exists
-                                                        // TODO: otherwise set as generic material icon
                                                         ? const SizedBox() 
+                                                        // otherwise set as generic material icon
                                                         : const PictureFrame(),
                                                 const SizedBox(width: 10),
-                                                const Text("Amida K.", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Yuruka")),
+                                                const Text("Guest", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Yuruka")),
                                         ],
                                 )
                         ],

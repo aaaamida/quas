@@ -1,7 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-import 'enums.dart';
-import 'home.dart';
+import 'tasks.dart';
 import 'categories.dart';
 import 'profile.dart';
 
@@ -28,6 +27,7 @@ class MyApp extends StatelessWidget {
                                         // color2: #8E508A
                                         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
                                         useMaterial3: true,
+                                        fontFamily: "Yuruka"
                                 ),
                                 home: const MyHomePage(),
                                 debugShowCheckedModeBanner: false,
@@ -48,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
         // dark: #1E1E2F
         int backgroundColor = 0xFFFFFFFF;
         int _selectedIndex = 0;
-        AppTheme colorTheme = AppTheme.light;
         // ignore: prefer_final_fields
         PageController _pageController = PageController(
                 initialPage: 0,
@@ -56,6 +55,11 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         final _formkey = GlobalKey<FormState>();
 
+        void changeTheme() {
+                setState(
+                        () {AdaptiveTheme.of(context).toggleThemeMode(useSystem: false);}
+                );
+        }
 
         @override
         void initState() {
@@ -65,16 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
         List<BottomNavigationBarItem> bottomBarItems() {
                 return const [
                         BottomNavigationBarItem(
-                                icon: Icon(Icons.home_outlined),
-                                activeIcon: Icon(Icons.home),
-                                tooltip: "Move to home page",
-                                label: "Home",
+                                icon: Icon(Icons.bookmark_border_outlined),
+                                activeIcon: Icon(Icons.bookmark_outlined),
+                                tooltip: "Move to tasks page",
+                                label: "Task",
                         ),
                         BottomNavigationBarItem(
-                                icon: Icon(Icons.bookmark_add_outlined),
-                                activeIcon: Icon(Icons.bookmark_add),
+                                icon: Icon(Icons.bookmarks_outlined),
+                                activeIcon: Icon(Icons.bookmarks),
                                 tooltip: "Add, edit, or remove tasks",
-                                label: "Manage Tasks",
+                                label: "Manage",
                         ),
                         BottomNavigationBarItem(
                                 icon: Icon(Icons.account_circle_outlined),
@@ -171,13 +175,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
         @override
         Widget build(BuildContext context) {
+                AdaptiveThemeMode colorTheme = AdaptiveTheme.of(context).mode;
                 // ignore: prefer_const_constructors
                 return Scaffold(
                         appBar: AppBar(
                                 title: const Text("QuAs", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Yuruka")),
                                 // TODO: make colorschemes customisable
                                 // ignore: prefer_const_constructors
-                                backgroundColor: Color(0xFF5F5286),
+                                backgroundColor: switch (AdaptiveTheme.of(context).mode) {
+                                        AdaptiveThemeMode.dark => const Color(0xFF3B3354),
+                                        _                      => const Color(0xFF5F5286),
+                                }
                         ),
                         // ignore: prefer_const_constructors
                         body: PageView(
@@ -193,7 +201,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         // ignore: prefer_const_constructors
                         bottomNavigationBar: BottomNavigationBar(
-                                backgroundColor: const Color(0xFF5F5286),
+                                backgroundColor: switch (AdaptiveTheme.of(context).mode) {
+                                        AdaptiveThemeMode.dark => const Color(0xFF3B3354),
+                                        _                      => const Color(0xFF5F5286),
+                                },
                                 currentIndex: _selectedIndex,
                                 selectedItemColor: const Color(0xFFFFFFFF),
                                 selectedLabelStyle: const TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.w500),
@@ -204,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         barItemTapped(index);
                                 },
                         ),
-                        floatingActionButton: FloatingActionButton(
+                        floatingActionButton: _selectedIndex == 1 ? FloatingActionButton(
                                 onPressed: () async {
                                         await showDialog<void>(
                                                 context: context, 
@@ -212,15 +223,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                         );
                                 },
                                 backgroundColor: switch (colorTheme) {
-                                        AppTheme.light => Color.alphaBlend(const Color(0xFFFFFFFF), Color(backgroundColor)),
-                                        AppTheme.dark  => Color.alphaBlend(const Color(0xFFACACAC), Color(backgroundColor)),
+                                        AdaptiveThemeMode.dark  => Color.alphaBlend(const Color(0xFFACACAC), Color(backgroundColor)),
+                                        _                       => Color.alphaBlend(const Color(0xFFFFFFFF), Color(backgroundColor)),
                                 },
                                 hoverColor: switch (colorTheme) {
-                                        AppTheme.light => const Color(0xFFCCCCCC),
-                                        AppTheme.dark  => const Color(0xFF919191),
+                                        AdaptiveThemeMode.dark  => const Color(0xFF919191),
+                                        _                       => const Color(0xFFCCCCCC),
                                 },
-                                child: const Icon(Icons.edit_outlined),
-                        ),
+                                child: const Icon(Icons.add_outlined),
+                        ) : const SizedBox(),
                 );
         }
 }
