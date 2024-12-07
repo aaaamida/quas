@@ -189,6 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         // ignore: prefer_const_constructors
                         body: PageView(
+                                physics: const NeverScrollableScrollPhysics(),
                                 controller: _pageController,
                                 onPageChanged: (int index) {
                                         pageChanged(index);
