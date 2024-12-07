@@ -25,11 +25,12 @@ class ListBox extends StatefulWidget {
 
 class _ListBoxState extends State<ListBox> {
 
-        List<Widget> boxChildren() {
+        List<Widget> listItems() {
                 return <Widget>[
+                        // TODO: add feature: task status changed on interaction
                         Checkbox(
                                 value: null,
-                                onChanged: null,
+                                onChanged: (state) {},
                                 shape: const CircleBorder(),
                         ),
                         Column(
@@ -57,7 +58,10 @@ class _ListBoxState extends State<ListBox> {
 
         @override
         Widget build(BuildContext context) {
-                return Container(
+                return SizedBox(
+                        height: 100,
+                        width: MediaQuery.sizeOf(context).width - MediaQuery.paddingOf(context).horizontal - 16,
+                        child: Container(
                                 color: switch (AdaptiveTheme.of(context).mode) { 
                                         AdaptiveThemeMode.dark => const Color(0xFF1E1E2F),
                                         _                      => const Color(0xFFFFFFFF),
@@ -67,7 +71,7 @@ class _ListBoxState extends State<ListBox> {
                                         border: Border.all(color: const Color(0xFF5F5286)),
                                         boxShadow: const <BoxShadow>[
                                                 BoxShadow(
-                                                        color: Color.fromARGB(200, 200, 200, 255 ~/ 2),
+                                                        color: Color.fromRGBO(200, 200, 200, 255 * 0.75),
                                                         spreadRadius: 5,
                                                         blurRadius: 7,
                                                         offset: Offset(0, 3)
@@ -78,9 +82,11 @@ class _ListBoxState extends State<ListBox> {
                                 child: Padding(
                                         padding: const EdgeInsets.all(8),
                                         child: Row(
-                                                children: boxChildren(),
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: listItems(),
                                         ),
                                 ),
+                        )
                 );
         }
 }
@@ -95,7 +101,9 @@ class TaskCategory extends StatelessWidget {
 
         @override Widget build(BuildContext context) {
                 return Chip(
-                        label: Text(name),
+                        label: Text(name, style: const TextStyle(fontSize: 10)),
+                        shape: const StadiumBorder(side: BorderSide(width: 0.2)),
+                        padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
                         backgroundColor: switch (AdaptiveTheme.of(context).mode) {
                                 AdaptiveThemeMode.dark => Color.fromARGB(255, rng(255 ~/ 2), rng(255 ~/ 2), rng(255 ~/ 2)),
                                 _                      => Color.fromARGB(255, rng(255), rng(255), rng(255)),
