@@ -1,0 +1,41 @@
+name: quas
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  adaptive_theme: ^3.6.0
+  sliding_up_panel: ^2.0.0+1
+  fpdart: ^1.1.1
+  flutter_redux: ^0.10.0
+  uuid: ^4.5.1
+  flutter_local_notifications: ^18.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - ./assets/
+    - ./assets/icons/
+  fonts:
+    - family: Yuruka
+      fonts:
+        - asset: ./assets/fonts/yuruka.ttf
+    - family: Helvetica
+      fonts:
+        - asset: ./assets/fonts/Helvetica.ttf
+        - asset: ./assets/fonts/Helvetica-Bold.ttf
+          weight: 600
