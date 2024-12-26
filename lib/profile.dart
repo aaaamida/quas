@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 
 class Profile extends StatefulWidget {
         const Profile({super.key});
@@ -51,11 +52,25 @@ class _ProfileState extends State<Profile> {
 
         @override
         Widget build(BuildContext context) {
-                return Padding(
-                        padding: const EdgeInsets.all(8),
+                return Container(
+                        color: switch (AdaptiveTheme.of(context).mode) {
+                                AdaptiveThemeMode.dark => const Color(0xFF4A4659),
+                                _                      => const Color(0xFFFFFFFF),
+                        },
                         child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: columnChildren(),
+                                children: [
+                                        const PreferredSize(
+                                                preferredSize: Size(24, 24),
+                                                child: SizedBox(width: double.infinity, height: 24),
+                                        ),
+                                        Padding(
+                                                padding: const EdgeInsets.all(8),
+                                                child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: columnChildren(),
+                                                ),
+                                        ),
+                                ],
                         ),
                 );
         }

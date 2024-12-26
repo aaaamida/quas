@@ -6,6 +6,7 @@ import 'tasks.dart';
 import 'categories.dart';
 import 'profile.dart';
 import 'settings.dart';
+import 'input_form.dart';
 
 void main() {
      // WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 initialPage: 0,
                 keepPage: true,
         );
-        final _formkey = GlobalKey<FormState>();
 
         void changeTheme() {
                 setState(
@@ -99,81 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
         }
 
-        Widget formDialog() {
-                return AlertDialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        content: Stack(
-                                clipBehavior: Clip.none,
-                                children: <Widget>[
-                                        const Padding(
-                                                padding: EdgeInsets.only(bottom: 16),
-                                                child: Text("Add a new task", style: TextStyle(color: Color(0xFF5F5286))),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Form(
-                                                key: _formkey,
-                                                child: Column(
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        children: formItems(),
-                                                ),
-                                        )
-                                ],
-                        ),
-                        actions: formButtons(),
-                );
-        }
-
-        List<Widget> formItems() {
-                return [
-                        const SizedBox(height: 24),
-                        const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: TextField(
-                                        decoration: InputDecoration(
-                                                hintText: "Title",
-                                                border: UnderlineInputBorder(),
-                                        ),
-                                        enabled: false,
-                                )
-                        ),
-                        const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: TextField(
-                                        decoration: InputDecoration(
-                                                hintText: "Category",
-                                                border: UnderlineInputBorder(),
-                                        ),
-                                        enabled: false,
-                                )
-                        ),
-                        const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: TextField(
-                                        decoration: InputDecoration(
-                                                hintText: "Deadline",
-                                                border: UnderlineInputBorder(),
-                                        ),
-                                        enabled: false,
-                                )
-                        ),
-                ];
-        }
-
-        List<Widget> formButtons() {
-                return [
-                        TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Cancel", style: TextStyle(fontFamily: "Yuruka"))
-                        ),
-                        const SizedBox(width: 10),
-                        // ignore: prefer_const_constructors
-                        TextButton(
-                                onPressed: null,
-                                child: const Text("Add", style: TextStyle(fontFamily: "Yuruka"))
-                        ),
-                ];
-        }
-
         PreferredSizeWidget appBar(int page, AdaptiveThemeMode colorTheme) {
                 PreferredSizeWidget bar = switch (page) {
                         0 || 1 => AppBar(
@@ -185,7 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         _ => const PreferredSize(preferredSize: Size(24, 24), child: SizedBox(height: 24, width: 24)),
                 };
-
                 return bar;
         }
 
@@ -280,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () async {
                                         await showDialog<void>(
                                                 context: context,
-                                                builder: (_) => formDialog(),
+                                                builder: (_) => const InputForm(),
                                         );
                                 },
                                 backgroundColor: switch (colorTheme) {
