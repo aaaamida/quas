@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
                                         // color2: #8E508A
                                         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
                                         useMaterial3: true,
-                                        fontFamily: "Yuruka"
+                                        fontFamily: "Nunito"
                                 ),
                                 home: const MyHomePage(),
                                 debugShowCheckedModeBanner: false,
@@ -171,7 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                                 child: ListView(
                                         padding: EdgeInsets.zero,
-                                        // ignore: prefer_const_literals_to_create_immutables
                                         children: drawerList(context),
                                 ),
                         ),
