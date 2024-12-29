@@ -19,6 +19,7 @@ dependencies:
   uuid: ^4.5.1
   flutter_local_notifications: ^18.0.1
   intl: ^0.20.1
+  datepicker_dropdown: ^0.1.6
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +41,7 @@ flutter:
         - asset: ./assets/fonts/Helvetica.ttf
         - asset: ./assets/fonts/Helvetica-Bold.ttf
           weight: 600
+    - family: Nunito
+      fonts:
+        - asset: ./assets/fonts/Nunito/static/Nunito-Black.ttf
+          weight: 400
