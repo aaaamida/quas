@@ -1,5 +1,6 @@
+import 'package:datepicker_dropdown/order_format.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:datepicker_dropdown/datepicker_dropdown.dart';
 
 class InputForm extends StatefulWidget {
         const InputForm({super.key});
@@ -9,11 +10,13 @@ class InputForm extends StatefulWidget {
 
 class _InputFormState extends State<InputForm> {
         final _formkey = GlobalKey<FormState>();
+        // ignore: unused_field
+        late int _day; late int _month; late int _year;
 
         @override
         Widget build(BuildContext context) {
                 return AlertDialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         content: Stack(
                                 clipBehavior: Clip.none,
                                 children: <Widget>[
@@ -36,11 +39,10 @@ class _InputFormState extends State<InputForm> {
         }
 
         List<Widget> formItems() {
-                DateTime? selectedDate;
                 return [
                         const SizedBox(height: 24),
                         const Padding(
-                                padding: EdgeInsets.all(8),
+                                padding: EdgeInsets.all(4),
                                 child: TextField(
                                         decoration: InputDecoration(
                                                 hintText: "Title",
@@ -50,7 +52,7 @@ class _InputFormState extends State<InputForm> {
                                 )
                         ),
                         const Padding(
-                                padding: EdgeInsets.all(8),
+                                padding: EdgeInsets.all(4),
                                 child: TextField(
                                         decoration: InputDecoration(
                                                 hintText: "Category",
@@ -59,26 +61,39 @@ class _InputFormState extends State<InputForm> {
                                         enabled: false,
                                 )
                         ),
-                        FutureBuilder<DateTime?>(
-                                future: showDatePicker(
-                                        context: context,
-                                        firstDate: DateTime.now(),
-                                        lastDate: DateTime.utc(2099, 12, 31, 23, 59, 59, 00)
+                        Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: DropdownDatePicker(
+                                        inputDecoration: const InputDecoration(
+                                                border: UnderlineInputBorder(),
+                                        ),
+                                        dateformatorder: OrderFormat.DMY,
+                                        startYear: DateTime.now().year,
+                                        endYear: DateTime.now().year + 20,
+                                        //selectedYear: DateTime.now().year,
+                                        //selectedMonth: DateTime.now().month,
+                                        width: 15.5,
+                                        hintDay: "Day",
+                                        hintMonth: "Month",
+                                        hintYear: "Year",
+                                        onChangedDay: (String? day) => _day = int.parse(day!),
+                                        onChangedYear: (String? year) => _year = int.parse(year!),
+                                        onChangedMonth: (String? month) => _month = switch (month!) {
+                                                "January"   => 1,
+                                                "February"  => 2,
+                                                "March"     => 3,
+                                                "April"     => 4,
+                                                "May"       => 5,
+                                                "June"      => 6,
+                                                "July"      => 7,
+                                                "August"    => 8,
+                                                "September" => 9,
+                                                "October"   => 10,
+                                                "November"  => 11,
+                                                "December"  => 12,
+                                                _           => 0,
+                                        },
                                 ),
-                                builder: (context, snapshot) {
-                                        return Padding(
-                                                padding: const EdgeInsets.all(8),
-                                                child: TextField(
-                                                        decoration: InputDecoration(
-                                                                hintText: snapshot.hasData
-                                                                        ? DateFormat("yyyy-MM-dd").format(selectedDate!)
-                                                                        : "Deadline",
-                                                                border: const UnderlineInputBorder(),
-                                                        ),
-                                                        enabled: false,
-                                                ),
-                                        );
-                                },
                         ),
                 ];
         }
@@ -86,14 +101,18 @@ class _InputFormState extends State<InputForm> {
         List<Widget> formButtons() {
                 return [
                         TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Cancel", style: TextStyle(fontFamily: "Yuruka"))
+                                onPressed: () {
+                                        if (mounted) {
+                                                Navigator.of(context).pop();
+                                        }
+                                },
+                                child: const Text("Cancel", style: TextStyle(fontFamily: "Nunito"))
                         ),
                         const SizedBox(width: 10),
                         // ignore: prefer_const_constructors
                         TextButton(
                                 onPressed: null,
-                                child: const Text("Add", style: TextStyle(fontFamily: "Yuruka"))
+                                child: const Text("Add", style: TextStyle(fontFamily: "Nunito"))
                         ),
                 ];
         }
