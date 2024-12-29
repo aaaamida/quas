@@ -23,7 +23,7 @@ class _ProfileState extends State<Profile> {
                                                         // otherwise set as generic material icon
                                                         : const PictureFrame(),
                                                 const SizedBox(width: 10),
-                                                const Text("Guest", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Yuruka", fontSize: 16)),
+                                                const Text("Guest", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Nunito", fontSize: 16)),
                                         ],
                                 )
                         ],
