@@ -11,7 +11,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
         bool _appTheme = false;
-        bool _notifyDisabled = false;
+        bool _notifyEnabled = true;
         static const WidgetStateProperty<Icon> _themeToggleIcon = WidgetStateProperty<Icon>.fromMap(
                 <WidgetStatesConstraint, Icon>{
                         WidgetState.selected: Icon(Icons.light_mode_rounded),
@@ -40,13 +40,13 @@ class _SettingsPageState extends State<SettingsPage> {
         Future<void> _loadNotifySetting() async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 setState(() {
-                        _notifyDisabled = prefs.getBool('notifyDisabled') ?? false;
+                        _notifyEnabled = prefs.getBool('notifyEnabled') ?? false;
                 });
         }
 
         Future<void> _saveNotifySetting(bool value) async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setBool('notifyDisabled', value);
+                await prefs.setBool('notifyEnabled', value);
         }
 
         @override
@@ -56,16 +56,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _loadNotifySetting();
         }
 
-        Widget listContents(BuildContext context) {
-                // ignore: unused_local_variable
+        Widget _listContents(BuildContext context) {
                 const pad = SizedBox(height: 8);
-                // ignore: unused_local_variable
-                const div = Divider(
-                        height: 2,
-                        thickness: 0.5,
-                        indent: 8,
-                        endIndent: 8,
-                );
                 Color textColor = switch (AdaptiveTheme.of(context).mode) {
                         AdaptiveThemeMode.dark => const Color(0xFFFFFFFF),
                         _                      => const Color(0xFF000000),
@@ -150,7 +142,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                         onChanged: (bool toggle) {
                                                                 setState(() {
                                                                         _appTheme = toggle;
-                                                                        _saveTheme(toggle);
+                                                                        _saveTheme(_appTheme);
                                                                 });
                                                                 switch (_appTheme) {
                                                                         case true:
@@ -179,17 +171,43 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 ),
                                                 trailing: Switch(
                                                         thumbIcon: _notificationToggleIcon,
-                                                        value: _notifyDisabled,
+                                                        value: _notifyEnabled,
                                                         onChanged: (toggle) {
                                                                 setState(() {
-                                                                        _notifyDisabled = toggle;
-                                                                        _saveNotifySetting(toggle);
+                                                                        _notifyEnabled = toggle;
+                                                                        _saveNotifySetting(_notifyEnabled);
                                                                 });
                                                         },
                                                 ),
                                         ),
                                 ),
+                                pad, pad,
+                                const Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                                "MISC",
+                                                style: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 10,
+                                                        decoration: TextDecoration.none,
+                                                )
+                                        ),
+                                ),
                                 pad,
+                                Card.outlined(
+                                        color: cardBGColor,
+                                        child: ListTile(
+                                                title: Text("About", style: TextStyle(color: textColor)),
+                                                subtitle: Text(
+                                                        "QuAs v0.0.1",
+                                                        style: TextStyle(
+                                                                color: textColor,
+                                                                fontSize: 12,
+                                                                fontWeight: FontWeight.w300,
+                                                        )
+                                                ),
+                                        ),
+                                )
                         ]
                 );
         }
@@ -203,7 +221,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                         child: Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: listContents(context),
+                                child: _listContents(context),
                         ),
                 );
         }

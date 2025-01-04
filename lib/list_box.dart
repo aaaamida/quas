@@ -1,19 +1,19 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart';
 
 class ListBox extends StatefulWidget {
-        const ListBox({
+        ListBox({
                 super.key,
-                required this.id,
-                required this.name,
+                required this.title,
                 required this.deadline,
                 this.category = ""
         });
 
-        final String id;
-        final String name;
-        final DateTime deadline;
-        final String category;
+        String title;
+        DateTime deadline;
+        String category;
 
         @override
         State<ListBox> createState() => _ListBoxState();
@@ -22,13 +22,45 @@ class ListBox extends StatefulWidget {
 class _ListBoxState extends State<ListBox> {
         @override
         Widget build(BuildContext context) {
-                return Card.outlined(
-                        child: ListTile(
-                                contentPadding: const EdgeInsets.all(8),
-                                leading: Checkbox(value: false, onChanged: (_) {}),
-                                title: Text(widget.name),
-                                trailing: Text(widget.deadline.toString()),
-                        ),
+                // ignore: unused_local_variable
+                final tasks = Provider.of<TaskProvider>(context).tasks;
+                const pad = SizedBox(height: 6);
+                Color cardBGColor = switch (AdaptiveTheme.of(context).mode) {
+                        AdaptiveThemeMode.dark => const Color.fromRGBO(20, 20, 20, 0.1),
+                        _                      => const Color(0xFFFFFFFF)
+                };
+                Color lineColor = switch (AdaptiveTheme.of(context).mode) {
+                        AdaptiveThemeMode.dark => const Color(0xFFFFFFFF),
+                        _                      => const Color(0xFF000000),
+                };
+                return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                                Card.outlined(
+                                        color: cardBGColor,
+                                        child: ListTile(
+                                                contentPadding: const EdgeInsets.all(6),
+                                                leading: Checkbox(
+                                                        value: false,
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+                                                        side: BorderSide(
+                                                                width: 1.5,
+                                                                color: switch (AdaptiveTheme.of(context).mode) {
+                                                                        AdaptiveThemeMode.dark => const Color(0xFFFFFFFF),
+                                                                        _                      => const Color(0xFF000000)
+                                                                }
+                                                        ),
+                                                        onChanged: (_) {}
+                                                ),
+                                                title: Text(widget.title, style: TextStyle(color: lineColor)),
+                                                trailing: Padding(
+                                                        padding: const EdgeInsets.only(right: 10),
+                                                        child: Text(widget.deadline.toString(), style: TextStyle(color: lineColor)),
+                                                ),
+                                        ),
+                                ),
+                                pad
+                        ],
                 );
         }
 }

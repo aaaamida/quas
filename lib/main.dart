@@ -1,9 +1,9 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart';
 import 'tasks.dart';
-import 'categories.dart';
+import 'calen.dart';
 import 'profile.dart';
 import 'settings.dart';
 import 'input_form.dart';
@@ -18,24 +18,23 @@ class MyApp extends StatelessWidget {
 
         @override
         Widget build(BuildContext context) {
-                return AdaptiveTheme(
-                        light: ThemeData.light(useMaterial3: true),
-                        dark: ThemeData.dark(useMaterial3: true),
-                        initial: AdaptiveThemeMode.dark,
-                        builder: (theme, darkTheme) => MaterialApp(
-                                title: "QuAs",
-                                theme: ThemeData(
-                                        // default color scheme
-                                        // color0: #5F5286
-                                        // color1: #453B61
-                                        // color2: #8E508A
-                                        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
-                                        useMaterial3: true,
-                                        fontFamily: "Nunito"
+                return ChangeNotifierProvider(
+                        create: (context) => TaskProvider(),
+                        child: AdaptiveTheme(
+                                light: ThemeData.light(useMaterial3: true),
+                                dark: ThemeData.dark(useMaterial3: true),
+                                initial: AdaptiveThemeMode.dark,
+                                builder: (theme, darkTheme) => MaterialApp(
+                                        title: "QuAs",
+                                        theme: ThemeData(
+                                                colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5F5286)),
+                                                useMaterial3: true,
+                                                fontFamily: "Nunito"
+                                        ),
+                                        home: const MyHomePage(),
+                                        debugShowCheckedModeBanner: false,
                                 ),
-                                home: const MyHomePage(),
-                                debugShowCheckedModeBanner: false,
-                        ),
+                        )
                 );
         }
 }
@@ -50,23 +49,31 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
         // light: #FFFFFF
         // dark: #1E1E2F
-        int backgroundColor = 0xFFFFFFFF;
+        // ignore: prefer_final_fields
         int _selectedIndex = 0;
         // ignore: prefer_final_fields
         PageController _pageController = PageController(
                 initialPage: 0,
                 keepPage: true,
         );
-
-        void changeTheme() {
-                setState(
-                        () {AdaptiveTheme.of(context).toggleThemeMode(useSystem: false);}
-                );
-        }
+        late DateTime taskDeadline = DateTime.now();
 
         @override
         void initState() {
                 super.initState();
+        }
+
+        void _pageChanged(int index) {
+                setState(() {
+                        _selectedIndex = index;
+                });
+        }
+
+        void _barItemTapped(int index) {
+                setState(() {
+                        _selectedIndex = index;
+                        _pageController.jumpToPage(index);
+                });
         }
 
         List<BottomNavigationBarItem> bottomBarItems() {
@@ -78,33 +85,30 @@ class _MyHomePageState extends State<MyHomePage> {
                                 label: "Tasks",
                         ),
                         BottomNavigationBarItem(
-                                icon: Icon(Icons.bookmarks_outlined),
-                                activeIcon: Icon(Icons.bookmarks),
-                                tooltip: "Add, edit, or remove tasks",
-                                label: "Manage",
+                                icon: Icon(Icons.calendar_month_outlined),
+                                activeIcon: Icon(Icons.calendar_month),
+                                tooltip: "See tasks by day of the month",
+                                label: "Calendar",
                         ),
                 ];
         }
 
-        void pageChanged(int index) {
-                setState(() {
-                        _selectedIndex = index;
-                });
-        }
 
-        void barItemTapped(int index) {
-                setState(() {
-                        _selectedIndex = index;
-                        _pageController.jumpToPage(index);
-                });
-        }
-
-        PreferredSizeWidget appBar(int page, AdaptiveThemeMode colorTheme) {
+        PreferredSizeWidget _appBar(int page, AdaptiveThemeMode colorTheme, BuildContext context) {
                 PreferredSizeWidget bar = switch (page) {
                         0 || 1 => AppBar(
-                                title: const Text("QuAs", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Yuruka", fontSize: 20)),
+                                title: Text(
+                                        "QuAs",
+                                        style: TextStyle(
+                                                color: Color(switch (AdaptiveTheme.of(context).mode) {
+                                                        AdaptiveThemeMode.dark => 0xFFFFFFFF,
+                                                        _                      => 0xFF5F5286,
+                                                }),
+                                                fontFamily: "Yuruka",
+                                                fontSize: 20)
+                                ),
                                 backgroundColor: switch (colorTheme) {
-                                        AdaptiveThemeMode.dark => const Color(0xFF4A4659),
+                                        AdaptiveThemeMode.dark => const Color(0xFF5F5286),
                                         _                      => const Color(0xFFFFFFFF),
                                 }
                         ),
@@ -113,19 +117,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 return bar;
         }
 
-        List<Widget> drawerList(BuildContext context) {
+        List<Widget> _drawerList(BuildContext context) {
                 final highlight = switch (AdaptiveTheme.of(context).mode) {
                         AdaptiveThemeMode.dark => const Color(0xFFFFFFFF),
                         _                      => const Color(0xFF000000),
                 };
 
                 return <Widget>[
-                        DrawerHeader(
-                                decoration: const BoxDecoration(color: Color(0xFF5F5286)),
-                                child: Text("QuAs", style: TextStyle(fontSize: 24, color: highlight)),
+                        const DrawerHeader(
+                                decoration: BoxDecoration(color: Color(0xFF5F5286)),
+                                child: Text("QuAs", style: TextStyle(fontSize: 24, color: Color(0xFFFFFFFF), fontFamily: "Yuruka")),
                         ),
                         ListTile(
-                                leading: Icon(Icons.account_circle, color: highlight,),
+                                leading: Icon(Icons.account_circle, color: highlight),
                                 title: Text("Profile", style: TextStyle(color: highlight)),
                                 onTap: () => Navigator.push(
                                         context,
@@ -147,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ];
         }
 
-        Widget pages(Widget page, BuildContext context) {
+        Widget _pages(Widget page, BuildContext context) {
                 final colorTheme = AdaptiveTheme.of(context).mode;
                 return Container(
                         color: switch (colorTheme) {
@@ -163,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Widget build(BuildContext context) {
                 AdaptiveThemeMode colorTheme = AdaptiveTheme.of(context).mode;
                 return Scaffold(
-                        appBar: appBar(_selectedIndex, colorTheme),
+                        appBar: _appBar(_selectedIndex, colorTheme, context),
                         drawer: Drawer(
                                 backgroundColor: switch (colorTheme) {
                                         AdaptiveThemeMode.dark => const Color(0xFF453B61),
@@ -171,20 +175,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                                 child: ListView(
                                         padding: EdgeInsets.zero,
-                                        children: drawerList(context),
+                                        children: _drawerList(context),
                                 ),
                         ),
                         body: PageView(
                                 physics: const NeverScrollableScrollPhysics(),
                                 controller: _pageController,
                                 onPageChanged: (int index) {
-                                        pageChanged(index);
+                                        _pageChanged(index);
                                 },
                                 children: <Widget>[
-                                        pages(const Home(), context),
-                                        pages(const Categories(), context),
-                                        pages(const Profile(), context),
-                                        pages(const SettingsPage(), context),
+                                        _pages(const Home(), context),
+                                        _pages(Calendar(taskDeadline: taskDeadline,), context),
+                                        _pages(const Profile(), context),
+                                        _pages(const SettingsPage(), context),
                                 ],
                         ),
                         bottomNavigationBar: BottomNavigationBar(
@@ -196,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 unselectedLabelStyle: const TextStyle(color: Color(0xFFACACAC), fontWeight: FontWeight.w400),
                                 items: bottomBarItems(),
                                 onTap: (int index) {
-                                        barItemTapped(index);
+                                        _barItemTapped(index);
                                 },
                         ),
                         floatingActionButton: _selectedIndex == 0 ? FloatingActionButton(
@@ -206,10 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 builder: (_) => const InputForm(),
                                         );
                                 },
-                                backgroundColor: switch (colorTheme) {
-                                        AdaptiveThemeMode.dark => Color.alphaBlend(const Color(0xFFACACAC), Color(backgroundColor)),
-                                        _                      => Color.alphaBlend(const Color(0xFFFFFFFF), Color(backgroundColor)),
-                                },
+                                backgroundColor: const Color(0xFFFFFFFF),
                                 hoverColor: switch (colorTheme) {
                                         AdaptiveThemeMode.dark => const Color(0xFF919191),
                                         _                      => const Color(0xFFAAAAAA),

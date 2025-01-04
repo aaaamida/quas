@@ -1,6 +1,8 @@
 import 'package:datepicker_dropdown/order_format.dart';
 import 'package:flutter/material.dart';
 import 'package:datepicker_dropdown/datepicker_dropdown.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart';
 
 class InputForm extends StatefulWidget {
         const InputForm({super.key});
@@ -9,9 +11,11 @@ class InputForm extends StatefulWidget {
 }
 
 class _InputFormState extends State<InputForm> {
-        final _formkey = GlobalKey<FormState>();
         // ignore: unused_field
         late int _day; late int _month; late int _year;
+        final _formKey = GlobalKey<FormState>();
+        final _titleController = TextEditingController();
+        final _categoryController = TextEditingController();
 
         @override
         Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class _InputFormState extends State<InputForm> {
                                         ),
                                         const SizedBox(height: 8),
                                         Form(
-                                                key: _formkey,
+                                                key: _formKey,
                                                 child: Column(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: formItems(),
@@ -48,7 +52,7 @@ class _InputFormState extends State<InputForm> {
                                                 hintText: "Title",
                                                 border: UnderlineInputBorder(),
                                         ),
-                                        enabled: false,
+                                        enabled: true,
                                 )
                         ),
                         const Padding(
@@ -58,7 +62,7 @@ class _InputFormState extends State<InputForm> {
                                                 hintText: "Category",
                                                 border: UnderlineInputBorder(),
                                         ),
-                                        enabled: false,
+                                        enabled: true,
                                 )
                         ),
                         Padding(
@@ -111,11 +115,26 @@ class _InputFormState extends State<InputForm> {
                         const SizedBox(width: 10),
                         // ignore: prefer_const_constructors
                         TextButton(
-                                onPressed: null,
+                                onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                                final newTask = Task(
+                                                        title: _titleController.text,
+                                                        category: _categoryController.text,
+                                                        deadline: DateTime(_year, _month, _day),
+                                                );
+                                                Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
+                                                Navigator.of(context).pop();
+                                        }
+                                },
                                 child: const Text("Add", style: TextStyle(fontFamily: "Nunito"))
                         ),
                 ];
         }
 
-
+        @override
+        void dispose() {
+                _titleController.dispose();
+                _categoryController.dispose();
+                super.dispose();
+        }
 }

@@ -10,44 +10,62 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
-        bool pfpExists = false;
-
-        Widget profileBoxContent() {
+        Widget _profileContents() {
+                const pad = SizedBox(height: 8);
+                Color textColor = switch (AdaptiveTheme.of(context).mode) {
+                        AdaptiveThemeMode.dark => const Color(0xFFFFFFFF),
+                        _                      => const Color(0xFF000000),
+                };
+                Color cardBGColor = switch (AdaptiveTheme.of(context).mode) {
+                        AdaptiveThemeMode.dark => const Color.fromRGBO(200, 200, 200, 0.4),
+                        _                      => const Color(0xFFFFFFFF)
+                };
                 return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                                Row(
-                                        children: [
-                                                pfpExists
-                                                        // TODO: add circular frame for profile picture if exists
-                                                        ? const SizedBox()
-                                                        // otherwise set as generic material icon
-                                                        : const PictureFrame(),
-                                                const SizedBox(width: 10),
-                                                const Text("Guest", style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Nunito", fontSize: 16)),
-                                        ],
-                                )
+                                pad, pad, pad,
+                                IconButton(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        icon: Icon(
+                                                Icons.arrow_back_rounded,
+                                                color: switch (AdaptiveTheme.of(context).mode) {
+                                                        AdaptiveThemeMode.dark => Colors.white,
+                                                        _                      => Colors.black,
+                                                }
+                                        )
+                                ),
+                                pad,
+                                Card.outlined(
+                                        color: cardBGColor,
+                                        child: ListTile(
+                                                contentPadding: const EdgeInsets.only(left: 16, right: 8),
+                                                leading: Icon(Icons.account_circle, size: 24, color: textColor),
+                                                title: Text("Guest", style: TextStyle(color: textColor)),
+                                        ),
+                                ),
+                                pad,
+                                Card.outlined(
+                                        color: cardBGColor,
+                                        child: ListTile(
+                                                contentPadding: const EdgeInsets.only(left: 16, right: 8),
+                                                leading: Icon(Icons.access_time_outlined, color: textColor),
+                                                title: Text("n", style: TextStyle(color: textColor)),
+                                                subtitle: Text("Tasks Pending", style: TextStyle(color: textColor)),
+                                        ),
+                                ),
+                                pad,
+                                Card.outlined(
+                                        color: cardBGColor,
+                                        child: ListTile(
+                                                contentPadding: const EdgeInsets.only(left: 16, right: 8),
+                                                leading: Icon(Icons.library_add_check, color: textColor),
+                                                title: Text("n", style: TextStyle(color: textColor)),
+                                                subtitle: Text("Tasks Completed", style: TextStyle(color: textColor)),
+                                        ),
+                                ),
+                                pad,
                         ],
                 );
-        }
-
-        List<Widget> columnChildren() {
-                return [
-                        SizedBox(
-                                height: 100,
-                                width: 2000,
-                                child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Container(
-                                                // ignore: prefer_const_constructors
-                                                color: Color(0xFF8E508A),
-                                                child: Padding(
-                                                        padding: const EdgeInsets.all(8),
-                                                        child: profileBoxContent(),
-                                                ),
-                                        ),
-                                )
-                        ),
-                ];
         }
 
         @override
@@ -57,20 +75,9 @@ class _ProfileState extends State<Profile> {
                                 AdaptiveThemeMode.dark => const Color(0xFF4A4659),
                                 _                      => const Color(0xFFFFFFFF),
                         },
-                        child: Column(
-                                children: [
-                                        const PreferredSize(
-                                                preferredSize: Size(24, 24),
-                                                child: SizedBox(width: double.infinity, height: 24),
-                                        ),
-                                        Padding(
-                                                padding: const EdgeInsets.all(8),
-                                                child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: columnChildren(),
-                                                ),
-                                        ),
-                                ],
+                        child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: _profileContents(),
                         ),
                 );
         }
